@@ -5,7 +5,9 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "picture" TEXT,
-    "userType" TEXT NOT NULL
+    "userType" TEXT NOT NULL,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATETIME NOT NULL
 );
 
 -- CreateTable
@@ -30,18 +32,19 @@ CREATE TABLE "VehicleDriver" (
 -- CreateTable
 CREATE TABLE "Allocation" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "userId" TEXT NOT NULL,
     "vehicleId" TEXT NOT NULL,
     "routeId" TEXT NOT NULL,
+    "driverId" TEXT NOT NULL,
     CONSTRAINT "Allocation_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Allocation_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Allocation_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Allocation_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Stop" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "routeId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "routeId" TEXT NOT NULL,
     "latitude" TEXT NOT NULL,
     "longitude" TEXT NOT NULL,
     CONSTRAINT "Stop_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -82,7 +85,7 @@ CREATE TABLE "Vehicle" (
 CREATE TABLE "Responsible" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "fullname" TEXT NOT NULL,
-    "profession" TEXT NOT NULL,
+    "profission" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL
 );
 
@@ -97,7 +100,6 @@ CREATE TABLE "Travel" (
     "driverId" TEXT,
     CONSTRAINT "Travel_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Travel_stopId_fkey" FOREIGN KEY ("stopId") REFERENCES "Stop" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Travel_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Travel_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
@@ -105,15 +107,8 @@ CREATE TABLE "Travel" (
 CREATE TABLE "totalStudents" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "vehicleId" TEXT NOT NULL,
-    "startTime" INTEGER NOT NULL,
-    "endTime" INTEGER NOT NULL,
-    "stopId" TEXT NOT NULL,
-    "routeId" TEXT NOT NULL,
     "driverId" TEXT,
-    CONSTRAINT "totalStudents_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "totalStudents_stopId_fkey" FOREIGN KEY ("stopId") REFERENCES "Stop" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "totalStudents_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "totalStudents_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT "totalStudents_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable

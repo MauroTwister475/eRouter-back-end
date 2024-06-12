@@ -7,7 +7,7 @@ export interface Iuser  {
   token?: string,
 }
 
-export type UserType = "Admin" | "Driver" | "Responsable";
+export type UserType = "adm" | "motorista" | "responsavel";
 
 export interface RegisterUserBody {
   username: string;

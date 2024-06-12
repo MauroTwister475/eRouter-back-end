@@ -1,20 +1,40 @@
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
 model User {
-  id         String       @id @default(uuid())
-  username   String       @unique
-  email      String       @unique
+  id         String   @id @default(uuid())
+  username   String   @unique
+  email      String   @unique
   password   String
   picture    String?
   userType   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
+
+// model UserAccess {
+//   id         String   @id @default(uuid())
+//   User       User?    @relation(fields: [userId], references: [id])
+//   userId     String?
+//   Access     Access?  @relation(fields: [accessId], references: [id])
+//   accessId   String?
+//   created_at DateTime @default(now())
+//   updated_at DateTime @updatedAt
+// }
+
+// model Access {
+//   id         String       @id @default(uuid())
+//   name       String       @unique
+//   userAccess UserAccess[]
+//   created_at DateTime     @default(now())
+//   updated_at DateTime     @updatedAt
+// }
 
 model Driver {
   id                 String          @id @default(uuid())
@@ -23,7 +43,7 @@ model Driver {
   yearOfWorkAsDriver Int
   vehicles           VehicleDriver[]
   travels            Travel[]
-  totalStudents      totalStudents[]
+  allocation         Allocation[]
 }
 
 model VehicleDriver {
@@ -38,37 +58,35 @@ model VehicleDriver {
 
 model Allocation {
   id        String @id @default(uuid())
-  userId    String
   vehicleId String
   routeId   String
+  driverId  String
 
   vehicle Vehicle @relation(fields: [vehicleId], references: [id])
   route   Route   @relation(fields: [routeId], references: [id])
+  driver  Driver  @relation(fields: [driverId], references: [id])
 }
 
 model Stop {
   id        String @id @default(uuid())
-  routeId   String
   name      String
+  routeId   String
   latitude  String
   longitude String
 
-  route         Route           @relation(fields: [routeId], references: [id])
-  Travel        Travel[]
-  totalStudents totalStudents[]
+  route  Route    @relation(fields: [routeId], references: [id])
+  Travel Travel[]
 }
 
 model Route {
-  id            String          @id @default(uuid())
-  name          String
-  startLat      String
-  destinyLat    String
-  startLong     String
-  destinyLong   String
-  stops         Stop[]
-  allocations   Allocation[]
-  travels       Travel[]
-  totalStudents totalStudents[]
+  id          String       @id @default(uuid())
+  name        String
+  startLat    String
+  destinyLat  String
+  startLong   String
+  destinyLong String
+  stops       Stop[]
+  allocations Allocation[]
 }
 
 model Student {
@@ -93,14 +111,14 @@ model Vehicle {
   students      Student[]
   travels       Travel[]
   Allocation    Allocation[]
-  totalStudents totalStudents[]
+  // totalStudents totalStudents[]
   VehicleStatus VehicleStatus[]
 }
 
 model Responsible {
   id          String    @id @default(uuid())
   fullname    String
-  profession  String
+  profission  String
   phoneNumber String
   students    Student[]
 }
@@ -115,24 +133,17 @@ model Travel {
 
   vehicle  Vehicle @relation(fields: [vehicleId], references: [id])
   stop     Stop    @relation(fields: [stopId], references: [id])
-  route    Route   @relation(fields: [routeId], references: [id])
   Driver   Driver? @relation(fields: [driverId], references: [id])
   driverId String?
 }
 
 model totalStudents {
   id        String @id @default(uuid())
-  vehicleId String
-  startTime Int
-  endTime   Int
-  stopId    String
-  routeId   String
+  total     Int
+  // vehicleId String
 
-  vehicle  Vehicle @relation(fields: [vehicleId], references: [id])
-  stop     Stop    @relation(fields: [stopId], references: [id])
-  route    Route   @relation(fields: [routeId], references: [id])
-  Driver   Driver? @relation(fields: [driverId], references: [id])
-  driverId String?
+  // vehicle  Vehicle @relation(fields: [vehicleId], references: [id])
+  // driverId String?
 }
 
 model VehicleStatus {
@@ -142,83 +153,4 @@ model VehicleStatus {
   availableSeats Int?
 
   vehicle Vehicle @relation(fields: [vehicleId], references: [id])
-}
-
-
-//////// NOVAS SCHEMAS DO BANCO DE DADOS HAHAHHAHAHAHAHAH
-
-model User {
-  id             String       @id @default(uuid())
-  name           String
-  email          String       @unique
-  password       String
-  user_as_driver  Sale[]       @relation("responsable")
-  user_as_driver Sale[]       @relation("driver")
-  userAccess     UserAccess[]
-  store          Store[]
-  created_at     DateTime     @default(now())
-  updated_at     DateTime     @updatedAt
-}
-
-model UserAccess {
-  id         String   @id @default(uuid())
-  User       User?    @relation(fields: [userId], references: [id])
-  userId     String?
-  Access     Access?  @relation(fields: [accessId], references: [id])
-  accessId   String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
-
-model Access {
-  id         String       @id @default(uuid())
-  name       String       @unique
-  userAccess UserAccess[]
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-}
-
-model Product {
-  id          String        @id @default(uuid())
-  name        String
-  price       Float
-  amount      Int
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  Store       Store?        @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  storeId     String?
-  SaleProduct SaleProduct[]
-}
-
-model Store {
-  id         String    @id @default(uuid())
-  name       String
-  Product    Product[]
-  User       User?     @relation(fields: [userId], references: [id])
-  userId     String?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-}
-
-model Sale {
-  id          String        @id @default(uuid())
-  total_value Float
-  Buyer       User?         @relation("buyer", fields: [buyerId], references: [id])
-  buyerId     String?
-  Seller      User?         @relation("seller", fields: [sellerId], references: [id])
-  sellerId    String?
-  SaleProduct SaleProduct[]
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-}
-
-model SaleProduct {
-  id         String   @id @default(uuid())
-  quantity   Int
-  Sale       Sale     @relation(fields: [saleId], references: [id])
-  saleId     String
-  Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId  String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
 }

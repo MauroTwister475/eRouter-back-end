@@ -1,10 +1,10 @@
 import express from 'express';
-import { ResponsableController } from "../../controllers/responsable.controller";
+import { ResponsableController } from '../../controller/responsable.controller';
 
 export const responsableRoutes = express.Router()
-const responsables = new ResponsableController();
+const responsable = new ResponsableController();
 
-responsableRoutes.get("/responsables/view", responsables.view);
-responsableRoutes.post("/responsables/create", responsables.create);
-responsableRoutes.put("/responsables/update/:id", responsables.update);
-responsableRoutes.delete("/responsables/delete/:id", responsables.delete);
+responsableRoutes.get("/responsable/view", responsable.view);
+responsableRoutes.post("/responsable/create", responsable.create);
+responsableRoutes.put("/responsable/update/:id", responsable.update);
+responsableRoutes.delete("/responsable/delete/:id", responsable.delete);

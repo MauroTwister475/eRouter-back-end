@@ -3,9 +3,10 @@ import { Request, Response } from "express";
 
 export class RouteController {
   async create(req: Request, res: Response) {
-    const { name, startLat, destinyLat, startLong, destinyLong } = req.body;
+    const { nameRoute, startLat, destinyLat, startLong, destinyLong } = req.body;
+    const { nameStop, latitudeStop, longitudeStop } = req.body;
 
-    if (!name || !startLat || !destinyLat || !startLong || !destinyLong) {
+    if (!nameRoute || !startLat || !destinyLat || !startLong || !destinyLong || !nameStop || !longitudeStop || !latitudeStop) {
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios." });
@@ -14,24 +15,37 @@ export class RouteController {
     try {
       const existingRoute = await prisma.route.findFirst({
         where: {
-          OR: [{ name: name }],
+          OR: [{ name: nameRoute }],
         },
       });
 
       if (existingRoute) {
-        return res
-          .status(400)
-          .json({ error: "Já existe rota com esse nome." });
+        return res.status(400).json({ error: "Já existe rota com esse nome." });
       }
 
       const newRoute = await prisma.route.create({
         data: {
-          name, 
-          startLat, 
+          name: nameRoute,
+          startLat,
           destinyLat,
-          startLong, 
+          startLong,
           destinyLong,
+          stops: {
+            create: {
+              name: nameStop,
+              latitude: latitudeStop,
+              longitude: longitudeStop,
+            },
+          },
         },
+        select: {
+          startLat: true,
+          destinyLat: true,
+          startLong: true,
+          destinyLong: true,
+          name: true,
+          stops: true
+        }
       });
 
       res.status(201).json(newRoute);
@@ -44,11 +58,13 @@ export class RouteController {
     try {
       const routes = await prisma.route.findMany({
         select: {
-          name: true, 
-          startLat: true, 
+          id: true,
+          name: true,
+          startLat: true,
           destinyLat: true,
-          startLong: true, 
+          startLong: true,
           destinyLong: true,
+          stops: true
         },
       });
       return res.json(routes);
@@ -73,10 +89,10 @@ export class RouteController {
       const updatedroute = await prisma.route.update({
         where: { id },
         data: {
-          name, 
-          startLat, 
+          name,
+          startLat,
           destinyLat,
-          startLong, 
+          startLong,
           destinyLong,
         },
       });

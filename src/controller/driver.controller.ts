@@ -46,6 +46,8 @@ export class DriverController {
           username: true,
           picture: true,
           yearOfWorkAsDriver: true,
+          allocation: true,
+          vehicles: true,
         },
       });
       return res.json(drivers);

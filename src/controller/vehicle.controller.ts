@@ -27,8 +27,27 @@ export class VehicleController {
 
   async view(req: Request, res: Response) {
     try {
-      const vehicles = await prisma.vehicle.findMany();
-      return res.json(vehicles);
+      // const vehicles = await prisma.vehicle.findMany({
+      //   select: {
+         
+      //     VehicleStatus: true,
+      //   }
+      // });
+      
+      const vehiclesDriver = await prisma.vehicleDriver.findMany({
+        include: {
+          driver: true,
+          vehicle: {
+            select: {
+              Allocation: true,
+              capacity: true,
+              plate: true,
+              model: true,
+            }
+          }
+        }
+      })
+      return res.json(vehiclesDriver);
     } catch (error) {
       res.sendStatus(500).json({ error: 'Erro ao buscar os veículos' });
     }

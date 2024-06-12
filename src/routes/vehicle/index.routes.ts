@@ -1,5 +1,5 @@
 import express from 'express';
-import { VehicleController } from "../../controllers/vehicle.controller";
+import { VehicleController } from '../../controller/vehicle.controller';
 
 export const vehicleRoutes = express.Router()
 const vehicle = new VehicleController();

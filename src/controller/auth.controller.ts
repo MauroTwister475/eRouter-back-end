@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import { prisma } from "../database/prisma";
 import { LoginRequestBody } from "../interfaces/ILogin";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/generate-token";
+import { getCurrentDriver } from "../functions/getCurrentDriver";
+// import { generateToken } from "../utils/generate-token";
 
-type UserLogged = {
+export type UserLogged = {
   id: string;
   username: string;
   email: string;
@@ -42,6 +43,8 @@ export class AuthController {
         userType: user.userType,
         // token: token,
       }
+
+      getCurrentDriver(userLoggin);
 
       return res.status(200).json(userLoggin);
     } catch (error) {

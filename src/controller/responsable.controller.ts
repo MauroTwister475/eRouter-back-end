@@ -3,9 +3,9 @@ import { prisma } from "../database/prisma";
 
 export class ResponsableController {
   async create(req: Request, res: Response) {
-    const { fullname, profession, phoneNumber } = req.body;
+    const { fullname, profission, phoneNumber } = req.body;
 
-    if (!fullname || !profession || !phoneNumber) {
+    if (!fullname || !profission || !phoneNumber) {
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios." });
@@ -27,7 +27,7 @@ export class ResponsableController {
       const newResponsable = await prisma.responsible.create({
         data: {
           fullname,
-          profession,
+          profission,
           phoneNumber,
         },
       });
@@ -44,8 +44,9 @@ export class ResponsableController {
         select: {
           id: true,
           fullname: true,
-          profession: true,
+          profission: true,
           phoneNumber: true,
+          students: true,
         },
       });
       return res.json(responsables);
@@ -56,7 +57,7 @@ export class ResponsableController {
   }
   async update(req: Request, res: Response) {
     const { id } = req.params;
-    const { fullname, profession, phoneNumber } = req.body;
+    const { fullname, profission, phoneNumber } = req.body;
 
     try {
       const existingResponsable = await prisma.responsible.findUnique({
@@ -71,7 +72,7 @@ export class ResponsableController {
         where: { id },
         data: {
           fullname,
-          profession,
+          profission,
           phoneNumber,
         },
       });

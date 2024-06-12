@@ -1,8 +1,7 @@
 declare namespace Express {
   interface Request {
-    user: {
+    User: {
       id: string;
-      userType: "Admin" | "Driver" | "Responsable";
     };
   }
 }
